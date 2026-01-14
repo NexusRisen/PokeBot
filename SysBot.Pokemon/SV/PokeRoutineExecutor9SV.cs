@@ -275,6 +275,11 @@ public abstract class PokeRoutineExecutor9SV : PokeRoutineExecutor<PK9>
 
     protected virtual async Task EnterLinkCode(int code, PokeTradeHubConfig config, CancellationToken token)
     {
+        // Clear existing text first
+        HidKeyboardKey[] clearKeys = Enumerable.Repeat(HidKeyboardKey.Backspace, 10).ToArray();
+        await Connection.SendAsync(SwitchCommand.TypeMultipleKeys(clearKeys), token).ConfigureAwait(false);
+        await Task.Delay(500, token).ConfigureAwait(false);
+
         char[] codeChars = $"{code:00000000}".ToCharArray();
         HidKeyboardKey[] keysToPress = new HidKeyboardKey[codeChars.Length];
         for (int i = 0; i < codeChars.Length; ++i)

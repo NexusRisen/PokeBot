@@ -1317,6 +1317,9 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
         // Confirm Code (PLUS)
         await Click(PLUS, 1_000, token).ConfigureAwait(false);
 
+        // Move down to 'Begin Searching'
+        await Click(DDOWN, 0_500, token).ConfigureAwait(false);
+
         // Clear NID before search
         await ClearTradePartnerNID(TradePartnerNIDOffset, token).ConfigureAwait(false);
 
