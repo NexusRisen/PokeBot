@@ -107,8 +107,9 @@ namespace SysBot.Pokemon
                 offs = await SwitchConnection.PointerAll(LinkTradePartnerNameSlot2Pointer, token).ConfigureAwait(false);
 
             var id = await SwitchConnection.ReadBytesAbsoluteAsync(offs, 4, token).ConfigureAwait(false);
+            var idbytes = await SwitchConnection.ReadBytesAbsoluteAsync(offs + 0x4, 4, token).ConfigureAwait(false);
             var name = await SwitchConnection.ReadBytesAbsoluteAsync(offs + 0x8, 0x18, token).ConfigureAwait(false);
-            return new TrainerIDBlock(id, new byte[4], name);
+            return new TrainerIDBlock(id, idbytes, name);
         }
 
         public async Task InitializeHardware(IBotStateSettings settings, CancellationToken token)

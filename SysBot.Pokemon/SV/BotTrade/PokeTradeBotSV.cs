@@ -113,9 +113,11 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
         private async Task InitializeSessionOffsets(CancellationToken token)
         {
             Log("Caching session offsets...");
+            await Task.Delay(0, token).ConfigureAwait(false);
         }
 
-        private async Task<bool> ConnectIfNotConnected(CancellationToken token, bool aPressFirst)
+
+        private async Task<bool> ConnectIfNotConnected(bool aPressFirst, CancellationToken token)
         {
             if (!await IsConnected(token).ConfigureAwait(false))
             {
@@ -154,7 +156,7 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
             if (!await IsGameRunning(token).ConfigureAwait(false))
                 await StartGame(Hub.Config, token).ConfigureAwait(false);
 
-            if (!await ConnectIfNotConnected(token, verboseLogging).ConfigureAwait(false))
+            if (!await ConnectIfNotConnected(verboseLogging, token).ConfigureAwait(false))
                 return false;
 
             if (await IsKeyboardOpen(token).ConfigureAwait(false))
@@ -232,7 +234,7 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
             if (!await IsConnected(token).ConfigureAwait(false))
             {
                 Log("Not connected, trying again...");
-                await ConnectIfNotConnected(token, false).ConfigureAwait(false);
+                await ConnectIfNotConnected(false, token).ConfigureAwait(false);
                 await RestartGameIfCantTrade(true, code, token).ConfigureAwait(false);
             }
 
@@ -703,8 +705,127 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
                 PokeTradeType.Clone => await HandleClone(sav, poke, offered, oldEC, token).ConfigureAwait(false),
                 PokeTradeType.Seed when stt is not SpecialTradeType.WonderCard => await HandleClone(sav, poke, offered, oldEC, token).ConfigureAwait(false),
                 PokeTradeType.Seed when stt is SpecialTradeType.WonderCard => await JustInject(sav, offered, token).ConfigureAwait(false),
-                _ => (toSend, PokeTradeResult.Success),
+                _ => (await ApplyAutoOT(toSend, poke, partnerID, sav, token).ConfigureAwait(false), PokeTradeResult.Success),
             };
+        }
+
+        private async Task<PK9> ApplyAutoOT(PK9 toSend, PokeTradeDetail<PK9> poke, TrainerIDBlock partner, SAV9SV sav, CancellationToken token)
+        {
+            if (!Hub.Config.Global.Legality.UseTradePartnerInfo || poke.IgnoreAutoOT)
+                return toSend;
+
+            // Special handling for Pokémon GO
+            if (toSend.Version == GameVersion.GO)
+            {
+                var goClone = (PK9)toSend.Clone();
+
+                // Check if GO Pokemon has a home tracker
+                if (toSend is IHomeTrack { HasTracker: true })
+                {
+                    // Can only change OT name if it has a home tracker
+                    goClone.OriginalTrainerName = partner.TrainerName;
+                    ClearOTTrash(goClone, partner.TrainerName);
+
+                    if (!toSend.ChecksumValid)
+                        goClone.RefreshChecksum();
+
+                    Log("Applied only OT name to Pokémon from GO (has HOME tracker).");
+                    await SetBoxPokemon(goClone, token, sav).ConfigureAwait(false);
+                    return goClone;
+                }
+                else
+                {
+                    // No home tracker: can apply OT, TID, and SID
+                    goClone.OriginalTrainerName = partner.TrainerName;
+                    goClone.OriginalTrainerGender = partner.Gender;
+                    goClone.TrainerTID7 = (uint)partner.TID7;
+                    goClone.TrainerSID7 = (uint)partner.SID7;
+
+                    ClearOTTrash(goClone, partner.TrainerName);
+
+                    if (toSend.IsShiny)
+                        goClone.PID = (uint)((goClone.TID16 ^ goClone.SID16 ^ (goClone.PID & 0xFFFF) ^ toSend.ShinyXor) << 16) | (goClone.PID & 0xFFFF);
+
+                    if (!toSend.ChecksumValid)
+                        goClone.RefreshChecksum();
+
+                    Log("Applied OT, TID, and SID to Pokémon from GO (no HOME tracker).");
+                    await SetBoxPokemon(goClone, token, sav).ConfigureAwait(false);
+                    return goClone;
+                }
+            }
+
+            // Check for Home Tracker (Non-GO)
+            if (toSend is IHomeTrack pk && pk.HasTracker)
+            {
+                Log("Home tracker detected. Can't apply AutoOT.");
+                return toSend;
+            }
+
+            var cln = (PK9)toSend.Clone();
+
+            // Check if the Pokémon is from a Mystery Gift
+            bool isMysteryGift = toSend.FatefulEncounter;
+
+            if (isMysteryGift)
+            {
+                Log("Mystery Gift detected. Only applying OT info, preserving language.");
+                // Only set OT-related info for Mystery Gifts without preset OT/TID/SID
+                cln.OriginalTrainerGender = partner.Gender;
+                cln.TrainerTID7 = (uint)partner.TID7;
+                cln.TrainerSID7 = (uint)partner.SID7;
+                cln.OriginalTrainerName = partner.TrainerName;
+            }
+            else
+            {
+                cln.OriginalTrainerName = partner.TrainerName;
+                cln.OriginalTrainerGender = partner.Gender;
+                cln.TrainerTID7 = (uint)partner.TID7;
+                cln.TrainerSID7 = (uint)partner.SID7;
+                cln.Language = partner.Language;
+            }
+
+            ClearOTTrash(cln, partner.TrainerName);
+
+            if (cln.IsShiny)
+                cln.PID = (uint)((cln.TID16 ^ cln.SID16 ^ (cln.PID & 0xFFFF) ^ toSend.ShinyXor) << 16) | (cln.PID & 0xFFFF);
+
+            if (!cln.IsNicknamed)
+                cln.ClearNickname();
+
+            cln.RefreshChecksum();
+
+            var la = new LegalityAnalysis(cln);
+            if (la.Valid)
+            {
+                Log("Pokemon is valid with Trade Partner Info applied. Swapping details.");
+                await SetBoxPokemon(cln, token, sav).ConfigureAwait(false);
+                return cln;
+            }
+            else
+            {
+                Log("Pokemon not valid after using Trade Partner Info.");
+                return toSend;
+            }
+        }
+
+        private static void ClearOTTrash(PK9 pokemon, string trainerName)
+        {
+            Span<byte> trash = pokemon.OriginalTrainerTrash;
+            trash.Clear();
+            int maxLength = trash.Length / 2;
+            int actualLength = Math.Min(trainerName.Length, maxLength);
+            for (int i = 0; i < actualLength; i++)
+            {
+                char value = trainerName[i];
+                trash[i * 2] = (byte)value;
+                trash[(i * 2) + 1] = (byte)(value >> 8);
+            }
+            if (actualLength < maxLength)
+            {
+                trash[actualLength * 2] = 0x00;
+                trash[(actualLength * 2) + 1] = 0x00;
+            }
         }
 
         private async Task<(PK9 toSend, PokeTradeResult check)> HandleClone(SAV9SV sav, PokeTradeDetail<PK9> poke, PK9 offered, byte[] oldEC, CancellationToken token)
@@ -790,6 +911,8 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
 
                 toSend = trade.Receive;
                 poke.TradeData = toSend;
+
+                toSend = await ApplyAutoOT(toSend, poke, partner, sav, token).ConfigureAwait(false);
 
                 poke.SendNotification(this, "Injecting the requested Pokémon.");
                 await Click(A, 0_800, token).ConfigureAwait(false);
