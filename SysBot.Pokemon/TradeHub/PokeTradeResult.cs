@@ -23,6 +23,13 @@ public enum PokeTradeResult
 
     UserCanceled,
 
+    // Additional SV error states used by Berichan logic
+    NoPokemonDetected,
+
+    TrainerHasBadConnection,
+
+    Hiccup_Server,
+
     // Recovery -- General Bot Failures
     // Anything below here should be retried once if possible.
     RoutineCancel,

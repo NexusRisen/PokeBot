@@ -1,3 +1,4 @@
+using PKHeX.Core;
 using SysBot.Base;
 using System;
 using System.Threading;
@@ -5,12 +6,14 @@ using System.Threading.Tasks;
 
 namespace SysBot.Pokemon;
 
-public class RemoteControlBotSV(PokeBotState Config) : PokeRoutineExecutor9SV(Config)
+public class RemoteControlBotSV(PokeBotState Config, PokeTradeHub<PK9> Hub) : PokeRoutineExecutor9(Config)
 {
+    public PokeTradeHub<PK9> Hub { get; } = Hub;
+
     public override async Task HardStop()
     {
-        await SetStick(SwitchStick.LEFT, 0, 0, 0_500, CancellationToken.None).ConfigureAwait(false); // reset
-        await CleanExit(CancellationToken.None).ConfigureAwait(false);
+        await SetStick(SwitchStick.LEFT, 0, 0, 0_500, CancellationToken.None).ConfigureAwait(false);
+        await CleanExit(new DummyReset(), CancellationToken.None).ConfigureAwait(false);
     }
 
     public override async Task MainLoop(CancellationToken token)

@@ -1,45 +1,31 @@
+﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace SysBot.Pokemon;
-
-/// <summary>
-/// Pokémon Scarlet/Violet RAM offsets
-/// </summary>
-public class PokeDataOffsetsSV
+namespace SysBot.Pokemon
 {
-    public const int BoxFormatSlotSize = 0x158;
+    public static class PokeDataOffsetsSV
+    {
+        public const string ScarletID = "0100A3D008C5C000";
+        public const string VioletID = "01008F6008C5E000";
 
-    public const ulong LibAppletWeID = 0x010000000000100a;
+        public static IReadOnlyList<long> BoxStartPokemonPointer { get; } = new long[] { 0x4763BB8, 0x1A0, 0x30, 0x9D0, 0x00 };
+        public static IReadOnlyList<long> MyStatusPointer { get; } = new long[] { 0x4741FA0, 0x198, 0x00, 0x40 };
 
-    public const string ScarletID = "0100A3D008C5C000";
+        public static IReadOnlyList<long> LinkTradePartnerPokemonPointer { get; } = new long[] { 0x473A110, 0x48, 0x58, 0x40, 0x148 };
+        public static IReadOnlyList<long> LinkTradePartnerNameSlot1Pointer { get; } = new long[] { 0x473A110, 0x48, 0xB0, 0x00 };
+        public static IReadOnlyList<long> LinkTradePartnerNameSlot2Pointer { get; } = new long[] { 0x473A110, 0x48, 0xE0, 0x00 };
+        public static IReadOnlyList<long> LinkTradePartnerNIDPointer { get; } = new long[] { 0x475EA28, 0xF8, 0x08 };
 
-    public const string SVGameVersion = "4.0.0";
+        public static IReadOnlyList<long> OverworldPointer { get; } = new long[] { 0x47AFA18, 0x00, 0x388, 0x3C0, 0x00, 0x71C };
+        public static IReadOnlyList<long> IsSearchingPointer { get; } = new long[] { 0x4763C00, 0x58 }; // 0 no search, 1 search, 2 unknown (still searching) 
+        public static IReadOnlyList<long> ConnectionPointer { get; } = new long[] { 0x4763E08, 0x10 }; // 0 not connected, 1 connected, 2 adhoc 
 
-    public const string VioletID = "01008F6008C5E000";
+        public static IReadOnlyList<long> KeyboardBufferPointer { get; } = new long[] { 0x473B3A8, 0x30, 0x00 };
 
-    public IReadOnlyList<long> BoxStartPokemonPointer { get; } = [0x47350d8, 0xD8, 0x8, 0xB8, 0x30, 0x9D0, 0x0];
+        public static IReadOnlyList<long> PokePortalPointer = new long[] { 0x47AFA18, 0x00, 0x3C0, 0x3C0, 0x598 };
 
-    public IReadOnlyList<long> ConfigPointer { get; } = [0x47350d8, 0xD8, 0x8, 0xB8, 0xD0, 0x40];
-
-    public IReadOnlyList<long> CurrentBoxPointer { get; } = [0x47350d8, 0xD8, 0x8, 0xB8, 0x28, 0x570];
-
-    public IReadOnlyList<long> IsConnectedPointer { get; } = [0x4739648, 0x30];
-
-    public IReadOnlyList<long> KeyboardBufferPointer { get; } = [0x473B3A8, 0x30, 0x0];
-
-    public IReadOnlyList<long> LinkTradePartnerNIDPointer { get; } = [0x475EA28, 0xF8, 0x8];
-
-    public IReadOnlyList<long> LinkTradePartnerPokemonPointer { get; } = [0x473A110, 0x48, 0x58, 0x40, 0x148];
-
-    public IReadOnlyList<long> MyStatusPointer { get; } = [0x47350d8, 0xD8, 0x8, 0xB8, 0x0, 0x40];
-
-    public IReadOnlyList<long> OverworldPointer { get; } = [0x473ADE0, 0x160, 0xE8, 0x28];
-
-    public IReadOnlyList<long> PortalBoxStatusPointer { get; } = [0x475A0D0, 0x188, 0x350, 0xF0, 0x140, 0x78];
-
-    public IReadOnlyList<long> Trader1MyStatusPointer { get; } = [0x473A110, 0x48, 0xB0, 0x0];
-
-    public IReadOnlyList<long> Trader2MyStatusPointer { get; } = [0x473A110, 0x48, 0xE0, 0x0];
-
-    // One of the process IDs for the news.
+        public const int BoxFormatSlotSize = 0x158;
+        public const int TradeFormatSlotSize = 0x148;
+    }
 }
