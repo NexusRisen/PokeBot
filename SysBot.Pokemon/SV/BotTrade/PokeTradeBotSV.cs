@@ -160,14 +160,22 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
             {
                 int tries = 30;
                 while (!await IsInGame(token).ConfigureAwait(false) && tries-- > 0)
+                {
+                    if (await IsKeyboardOpen(token).ConfigureAwait(false))
+                        break;
                     await Click(A, 1_000, token).ConfigureAwait(false);
+                }
             }
 
-            if (await IsGameRunning(token).ConfigureAwait(false) && !await CanPlayerMove(token).ConfigureAwait(false))
+            if (await IsGameRunning(token).ConfigureAwait(false) && !await CanPlayerMove(token).ConfigureAwait(false) && !await IsPokePortalLoaded(token, verboseLogging).ConfigureAwait(false))
             {
                 int tries = 30;
                 while (!await CanPlayerMove(token).ConfigureAwait(false) && tries-- > 0)
+                {
+                    if (await IsKeyboardOpen(token).ConfigureAwait(false))
+                        break;
                     await Click(A, 1_000, token).ConfigureAwait(false);
+                }
             }
 
             if (!await ConnectIfNotConnected(verboseLogging, token).ConfigureAwait(false))
