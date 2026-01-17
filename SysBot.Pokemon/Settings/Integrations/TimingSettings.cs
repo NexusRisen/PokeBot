@@ -49,6 +49,9 @@ public class TimingSettings
     [Category(Misc), Description("[SV] Extra time in milliseconds to wait for the Poké Portal to load.")]
     public int ExtraTimeLoadPortal { get; set; } = 1000;
 
+    [Category(Misc), Description("[SV] Extra time in milliseconds to wait for the trade animation after it starts.")]
+    public int ExtraTimeTradeAnimation { get; set; }
+
     // Opening the game.
     [Category(OpenGame), Description("Enable this if you need to select a profile when starting the game.")]
     public bool ProfileSelectionRequired { get; set; } = true;

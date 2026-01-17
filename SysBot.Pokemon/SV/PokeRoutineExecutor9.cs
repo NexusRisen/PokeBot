@@ -187,17 +187,17 @@ namespace SysBot.Pokemon
             else
                 await Click(A, 1_000 + timing.ExtraTimeLoadProfile, token).ConfigureAwait(false);
 
-            // Menus here can go in the order: Update Prompt -> Profile -> DLC check -> Unable to use DLC.
-            //  The user can optionally turn on the setting if they know of a breaking system update incoming.
             if (timing.AvoidSystemUpdate)
             {
                 await Click(DUP, 0_600, token).ConfigureAwait(false);
                 await Click(A, 1_000 + timing.ExtraTimeLoadProfile, token).ConfigureAwait(false);
             }
 
-            await Click(A, 1_000 + timing.ExtraTimeCheckGame, token).ConfigureAwait(false);
-            // If they have DLC on the system and can't use it, requires an UP + A to start the game.
-            // Should be harmless otherwise since they'll be in loading screen.
+            await Click(A, 1_000, token).ConfigureAwait(false);
+
+            if (timing.CheckGameDelay)
+                await Task.Delay(2_000 + timing.ExtraTimeCheckGame, token).ConfigureAwait(false);
+
             await Click(DUP, 0_600, token).ConfigureAwait(false);
             await Click(A, 0_600, token).ConfigureAwait(false);
 

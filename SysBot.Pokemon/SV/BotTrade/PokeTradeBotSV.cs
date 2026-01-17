@@ -156,6 +156,20 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
             if (!await IsGameRunning(token).ConfigureAwait(false))
                 await StartGame(Hub.Config, token).ConfigureAwait(false);
 
+            if (await IsGameRunning(token).ConfigureAwait(false) && !await IsInGame(token).ConfigureAwait(false))
+            {
+                int tries = 30;
+                while (!await IsInGame(token).ConfigureAwait(false) && tries-- > 0)
+                    await Click(A, 1_000, token).ConfigureAwait(false);
+            }
+
+            if (await IsGameRunning(token).ConfigureAwait(false) && !await CanPlayerMove(token).ConfigureAwait(false))
+            {
+                int tries = 30;
+                while (!await CanPlayerMove(token).ConfigureAwait(false) && tries-- > 0)
+                    await Click(A, 1_000, token).ConfigureAwait(false);
+            }
+
             if (!await ConnectIfNotConnected(verboseLogging, token).ConfigureAwait(false))
                 return false;
 
@@ -583,7 +597,7 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
 
             await Click(A, 3_000, token).ConfigureAwait(false);
             var tradeCounter = 0;
-            while (await IsPokePortalLoaded(token).ConfigureAwait(false)) // PokePortal is loaded during trade animation
+            while (await IsPokePortalLoaded(token).ConfigureAwait(false))
             {
                 await Click(A, 1_000, token).ConfigureAwait(false);
                 tradeCounter++;
@@ -591,7 +605,7 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
                 var v1 = await SwitchConnection.PointerPeek(BoxFormatSlotSize, BoxStartPokemonPointer, token).ConfigureAwait(false);
                 if (!v1.SequenceEqual(oldPKData))
                 {
-                            await Task.Delay(16_000, token).ConfigureAwait(false);
+                    await Task.Delay(16_000 + Hub.Config.Timings.ExtraTimeTradeAnimation, token).ConfigureAwait(false);
                     return PokeTradeResult.Success;
                 }
                 if (tradeCounter >= Hub.Config.Trade.TradeConfiguration.TradeAnimationMaxDelaySeconds)
