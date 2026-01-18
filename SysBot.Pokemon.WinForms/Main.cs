@@ -79,6 +79,8 @@ namespace SysBot.Pokemon.WinForms
             // Apply Alienware Theme
             WinFormsTheme.Apply(this);
 
+            Text = $"PokéBot Control Center {PokeBot.Version}";
+
             Load += async (sender, e) => await InitializeAsync();
 
             TC_Main = new TabControl { Visible = false };
