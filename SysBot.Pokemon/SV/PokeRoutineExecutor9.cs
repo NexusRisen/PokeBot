@@ -153,16 +153,37 @@ namespace SysBot.Pokemon
 
         public async Task ReOpenGame(PokeTradeHubConfig config, CancellationToken token)
         {
-            // Reopen the game if we get soft-banned
-            Log("Potential soft-ban detected, reopening game just in case!");
+            Log("Restarting the game (closing and reopening)...");
+
+            // Always close out of the game first (HOME -> X -> A)
             await CloseGame(config, token).ConfigureAwait(false);
-            await StartGame(config, token).ConfigureAwait(false);
+
+            // Small safety delay to let the system fully return to HOME
+            await Task.Delay(1_000, token).ConfigureAwait(false);
+
+            // If for some reason the title is still running, try to ensure it is closed
+            int closeTries = 3;
+            while (closeTries-- > 0 && await IsGameRunning(token).ConfigureAwait(false))
+            {
+                await Click(HOME, 1_000, token).ConfigureAwait(false);
+                await Task.Delay(1_000, token).ConfigureAwait(false);
+            }
+
+            // Start the game fresh from HOME using the non-check branch
+            await StartGame(config, token, false).ConfigureAwait(false);
         }
 
         public async Task CloseGame(PokeTradeHubConfig config, CancellationToken token)
         {
             var timing = config.Timings;
-            // Close out of the game
+
+            if (!await IsGameRunning(token).ConfigureAwait(false))
+            {
+                Log("Game is not running; skipping close sequence.");
+                return;
+            }
+
+            await Click(B, 0_500, token).ConfigureAwait(false);
             await Click(HOME, 2_000 + timing.ExtraTimeReturnHome, token).ConfigureAwait(false);
             await Click(X, 1_000, token).ConfigureAwait(false);
             await Click(A, 5_000 + timing.ExtraTimeCloseGame, token).ConfigureAwait(false);
