@@ -206,23 +206,29 @@ namespace SysBot.Pokemon
             // Switch Logo lag, skip cutscene, game load screen
             await Task.Delay(15_000 + timing.ExtraTimeLoadGame, token).ConfigureAwait(false);
 
-            for (int i = 0; i < 4; i++)
-                await Click(A, 1_000, token).ConfigureAwait(false);
-
-            var timer = 60_000;
+            // Active Title Screen Handling (Hexbyt3-style)
+            var timer = 120_000;
+            Log("Waiting for Overworld... (Pressing A for Title Screen)");
             while (!await IsInGame(token).ConfigureAwait(false))
             {
-                await Task.Delay(1_000, token).ConfigureAwait(false);
-                timer -= 1_000;
-                // We haven't made it back to overworld after a minute, so press A every 6 seconds hoping to restart the game.
-                // Don't risk it if hub is set to avoid updates.
-                if (timer <= 0 && !timing.AvoidSystemUpdate)
+                if (timer <= 0)
                 {
-                    Log("Still not in the game, initiating rescue protocol!");
-                    while (!await IsInGame(token).ConfigureAwait(false))
-                        await Click(A, 6_000, token).ConfigureAwait(false);
+                    Log("Timed out waiting for game to load.");
                     break;
                 }
+
+                if (!await IsGameRunning(token).ConfigureAwait(false))
+                {
+                    // Game crashed or isn't running, break to let the crash handler below restart it.
+                    break;
+                }
+
+                if (await IsKeyboardOpen(token).ConfigureAwait(false))
+                     await Click(B, 1_000, token).ConfigureAwait(false);
+                else
+                    await Click(A, 1_500, token).ConfigureAwait(false);
+                
+                timer -= 1_500;
             }
 
             while (!await IsGameRunning(token).ConfigureAwait(false)) // Scarlet / Violet crash randomly

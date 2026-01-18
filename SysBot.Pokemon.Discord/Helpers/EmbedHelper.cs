@@ -18,7 +18,7 @@ public static class EmbedHelper
 
     // Common Footer
     private static readonly EmbedFooterBuilder Footer = new EmbedFooterBuilder()
-        .WithText("Powered by SysBot.NET")
+        .WithText("Powered by SysBots.NET - Nexus Risen Edition")
         .WithIconUrl("https://raw.githubusercontent.com/NexusRisen/sprites/main/pokeball.png");
 
     public static async Task SendNotificationEmbedAsync(IUser user, string message)

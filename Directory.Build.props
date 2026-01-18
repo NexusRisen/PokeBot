@@ -4,6 +4,7 @@
     <LangVersion>13</LangVersion>
     <Nullable>enable</Nullable>
     <NeutralLanguage>en</NeutralLanguage>
+    <Version>1.2.2</Version>
     <SourceRevisionId>$([System.DateTime]::UtcNow.ToString("yyMMddHHmmss"))</SourceRevisionId>
   </PropertyGroup>
 </Project>

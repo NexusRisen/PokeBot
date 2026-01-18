@@ -101,35 +101,5 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <Target Name="SetVersion" BeforeTargets="BeforeBuild">
-        <Message Text="Resolving Application Version from Git Tags..." Importance="high" />
-        
-        <!-- 
-             Retrieve the latest "clean" release tag (vX.Y.Z) from the repository history.
-             - excludes: tags with hyphens (e.g., v1.1.5-e)
-             - matches: standard vNumber.Number.Number format
-             - abbrev=0: ensures we get the tag name itself, not a commit-distance string
-        -->
-        <Exec Command="git describe --tags --abbrev=0 --match &quot;v[0-9]*.[0-9]*.[0-9]*&quot; --exclude &quot;*-*&quot;" 
-              ConsoleToMSBuild="true" 
-              StandardOutputImportance="low" 
-              IgnoreExitCode="true">
-            <Output TaskParameter="ConsoleOutput" PropertyName="GitTag" />
-        </Exec>
 
-        <Message Text="Git Tag found: $(GitTag)" Importance="high" />
-
-        <!-- Logic to sanitize the tag into a .NET-compatible version string -->
-        <PropertyGroup Condition="'$(GitTag)' != ''">
-            <CleanVersion>$(GitTag.Replace('v', ''))</CleanVersion>
-        </PropertyGroup>
-        <PropertyGroup Condition="'$(GitTag)' == ''">
-           <CleanVersion>1.0.0</CleanVersion>
-        </PropertyGroup>
-
-        <PropertyGroup>
-            <Version>$(CleanVersion)</Version>
-            <FileVersion>$(CleanVersion)</FileVersion>
-        </PropertyGroup>
-    </Target>
 </Project>
