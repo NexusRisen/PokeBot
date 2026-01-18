@@ -19,10 +19,7 @@ public class HubModule<T> : ModuleBase<SocketCommandContext> where T : PKM, new(
         var me = SysCord<T>.Runner;
         var hub = me.Hub;
 
-        var builder = new EmbedBuilder
-        {
-            Color = Color.Gold,
-        };
+        var builder = EmbedHelper.CreateBuilder(color: EmbedHelper.ColorGold);
 
         var runner = SysCord<T>.Runner;
         var allBots = runner.Bots.ConvertAll(z => z.Bot);

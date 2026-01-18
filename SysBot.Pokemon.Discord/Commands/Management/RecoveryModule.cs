@@ -38,10 +38,7 @@ public class RecoveryModule<T> : ModuleBase<SocketCommandContext> where T : PKM,
             return;
         }
 
-        var embed = new EmbedBuilder()
-            .WithTitle("Bot Recovery Status")
-            .WithColor(Color.Blue)
-            .WithTimestamp(DateTimeOffset.Now);
+        var embed = EmbedHelper.CreateBuilder("Bot Recovery Status", null, EmbedHelper.ColorInfo);
 
         var hasRecoveryData = false;
         foreach (var bot in Runner.Bots)

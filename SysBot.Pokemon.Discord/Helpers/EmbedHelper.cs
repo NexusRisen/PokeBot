@@ -9,40 +9,50 @@ namespace SysBot.Pokemon.Discord;
 public static class EmbedHelper
 {
     // NexusRisen Theme Colors
-    private static readonly Color ColorPrimary = new Color(43, 45, 49);     // Dark Gray (Discord-like)
-    private static readonly Color ColorAccent = new Color(88, 101, 242);    // Blurple
-    private static readonly Color ColorSuccess = new Color(87, 242, 135);   // Green
-    private static readonly Color ColorDanger = new Color(237, 66, 69);     // Red
-    private static readonly Color ColorWarning = new Color(254, 231, 92);   // Yellow
-    private static readonly Color ColorInfo = new Color(88, 101, 242);      // Blue/Blurple
+    public static readonly Color ColorPrimary = new Color(43, 45, 49);     // Dark Gray (Discord-like)
+    public static readonly Color ColorAccent = new Color(88, 101, 242);    // Blurple
+    public static readonly Color ColorSuccess = new Color(87, 242, 135);   // Green
+    public static readonly Color ColorDanger = new Color(237, 66, 69);     // Red
+    public static readonly Color ColorWarning = new Color(254, 231, 92);   // Yellow
+    public static readonly Color ColorInfo = new Color(88, 101, 242);      // Blue/Blurple
+    public static readonly Color ColorGold = new Color(255, 215, 0);       // Gold
 
     // Common Footer
-    private static readonly EmbedFooterBuilder Footer = new EmbedFooterBuilder()
+    public static readonly EmbedFooterBuilder Footer = new EmbedFooterBuilder()
         .WithText("Powered by SysBots.NET - Nexus Risen Edition")
         .WithIconUrl("https://raw.githubusercontent.com/NexusRisen/sprites/main/pokeball.png");
 
+    /// <summary>
+    /// Creates a standard EmbedBuilder with the default theme.
+    /// </summary>
+    public static EmbedBuilder CreateBuilder(string? title = null, string? description = null, Color? color = null)
+    {
+        var builder = new EmbedBuilder()
+            .WithTimestamp(DateTimeOffset.Now)
+            .WithFooter(Footer)
+            .WithColor(color ?? ColorPrimary);
+
+        if (!string.IsNullOrEmpty(title))
+            builder.WithTitle(title);
+
+        if (!string.IsNullOrEmpty(description))
+            builder.WithDescription(description);
+
+        return builder;
+    }
+
     public static async Task SendNotificationEmbedAsync(IUser user, string message)
     {
-        var embed = new EmbedBuilder()
-            .WithTitle("📢 Notification")
-            .WithDescription(message)
-            .WithTimestamp(DateTimeOffset.Now)
-            .WithColor(ColorInfo)
-            .WithFooter(Footer)
-            .Build();
-
+        var embed = CreateBuilder("📢 Notification", message, ColorInfo).Build();
         await user.SendMessageAsync(embed: embed).ConfigureAwait(false);
     }
 
     public static async Task SendTradeCodeEmbedAsync(IUser user, int code)
     {
-        var embed = new EmbedBuilder()
-            .WithTitle("🔄 Ready to Trade!")
-            .WithDescription($"Please enter the following Link Code:\n# {code:0000 0000}\n\n**Enter this code in your game, but DO NOT search yet.**")
-            .WithTimestamp(DateTimeOffset.Now)
+        var embed = CreateBuilder("🔄 Ready to Trade!",
+                $"Please enter the following Link Code:\n# {code:0000 0000}\n\n**Enter this code in your game, but DO NOT search yet.**",
+                ColorAccent)
             .WithThumbnailUrl("https://raw.githubusercontent.com/NexusRisen/sprites/main/tradecode.gif")
-            .WithColor(ColorAccent)
-            .WithFooter(Footer)
             .Build();
 
         await user.SendMessageAsync(embed: embed).ConfigureAwait(false);
@@ -66,13 +76,8 @@ public static class EmbedHelper
             thumbUrl = TradeExtensions<T>.PokeImg(pk, canGmax, false, null);
         }
 
-        var embed = new EmbedBuilder()
-            .WithTitle(title)
-            .WithDescription(message)
-            .WithTimestamp(DateTimeOffset.Now)
-            .WithColor(ColorSuccess)
+        var embed = CreateBuilder(title, message, ColorSuccess)
             .WithThumbnailUrl(thumbUrl)
-            .WithFooter(Footer)
             .Build();
 
         await user.SendMessageAsync(embed: embed).ConfigureAwait(false);
@@ -121,51 +126,28 @@ public static class EmbedHelper
         
         description += "\n\n**Please enter code in game but do not search yet.**";
 
-        var embed = new EmbedBuilder()
-            .WithTitle("🚀 Trade Initializing...")
+        var embed = CreateBuilder("🚀 Trade Initializing...", description, ColorAccent)
             .AddField("Pokémon", speciesName, true)
-            .WithDescription(description)
-            .WithTimestamp(DateTimeOffset.Now)
             .WithThumbnailUrl(imageUrl ?? "https://raw.githubusercontent.com/NexusRisen/sprites/main/initializing.gif")
-            .WithColor(ColorAccent) // Use accent color instead of orange
-            .WithFooter(Footer);
+            .Build();
 
-        var builtEmbed = embed.Build();
-        await user.SendMessageAsync(embed: builtEmbed).ConfigureAwait(false);
+        await user.SendMessageAsync(embed: embed).ConfigureAwait(false);
     }
 
     public static async Task SendTradeSearchingEmbedAsync(IUser user, string trainerName, string inGameName, string? message = null)
     {
-        var embed = new EmbedBuilder()
-            .WithTitle($"🔍 Searching For You")
+        var embed = CreateBuilder("🔍 Searching For You", message ?? "Please begin searching code in game.", ColorWarning)
             .AddField("Trainer", trainerName, true)
             .AddField("Bot IGN", inGameName, true)
-            .WithTimestamp(DateTimeOffset.Now)
             .WithThumbnailUrl("https://raw.githubusercontent.com/NexusRisen/sprites/main/searching.gif")
-            .WithColor(ColorWarning)
-            .WithFooter(Footer);
+            .Build();
 
-        if (!string.IsNullOrEmpty(message))
-        {
-            embed.WithDescription(message);
-        }
-        else
-        {
-            embed.WithDescription("Please begin searching code in game.");
-        }
-
-        var builtEmbed = embed.Build();
-        await user.SendMessageAsync(embed: builtEmbed).ConfigureAwait(false);
+        await user.SendMessageAsync(embed: embed).ConfigureAwait(false);
     }
 
     public static async Task SendTradeCanceledEmbedAsync(IUser user, string reason)
     {
-        var embed = new EmbedBuilder()
-            .WithTitle("⛔ Trade Canceled")
-            .WithDescription(reason)
-            .WithTimestamp(DateTimeOffset.Now)
-            .WithColor(ColorDanger)
-            .WithFooter(Footer)
+        var embed = CreateBuilder("⛔ Trade Canceled", reason, ColorDanger)
             .Build();
 
         await user.SendMessageAsync(embed: embed).ConfigureAwait(false);

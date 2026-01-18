@@ -110,17 +110,9 @@ public class DiscordTradeNotifier<T> : IPokeTradeNotifier<T>, IDisposable
 
                         var batchInfo = TotalBatchTrades > 1 ? $"\n\n**Important:** This is a batch trade with {TotalBatchTrades} Pokémon. Please stay in the trade until all are completed!" : "";
 
-                        var upNextEmbed = new EmbedBuilder
-                        {
-                            Color = Color.Gold,
-                            Title = "🎯 You're Up Next!",
-                            Description = $"Your trade will begin very soon. Please be ready!{batchInfo}",
-                            Footer = new EmbedFooterBuilder
-                            {
-                                Text = "Get ready to connect!"
-                            },
-                            Timestamp = DateTimeOffset.Now
-                        }.Build();
+                        var upNextEmbed = EmbedHelper.CreateBuilder("🎯 You're Up Next!", $"Your trade will begin very soon. Please be ready!{batchInfo}", EmbedHelper.ColorGold)
+                            .WithFooter("Get ready to connect!")
+                            .Build();
 
                         await Trader.SendMessageAsync(embed: upNextEmbed).ConfigureAwait(false);
                     }

@@ -206,10 +206,7 @@ namespace SysBot.Pokemon.Discord
 
         private static EmbedBuilder BuildEventListEmbed(string generationOrGame, IEnumerable<(int Index, string EventInfo)> allEvents, int page, int pageCount, string botPrefix)
         {
-            var embed = new EmbedBuilder()
-                .WithTitle($"Available Events - {generationOrGame.ToUpperInvariant()}")
-                .WithDescription($"Page {page} of {pageCount}")
-                .WithColor(DiscordColor.Blue);
+            var embed = EmbedHelper.CreateBuilder($"Available Events - {generationOrGame.ToUpperInvariant()}", $"Page {page} of {pageCount}", EmbedHelper.ColorInfo);
 
             foreach (var item in allEvents.Skip((page - 1) * itemsPerPage).Take(itemsPerPage))
             {

@@ -214,10 +214,18 @@ public static class Helpers<T> where T : PKM, new()
         {
             var reason = GetFailureReason(result, spec);
             var hint = result == "Failed" ? GetLegalizationHint(template, sav, pkm, spec) : null;
+            var report = SimpleLegalityFeedback.GetLegalityReport(pkm, la, spec);
+            string? combinedHint = null;
+            if (!string.IsNullOrWhiteSpace(hint))
+                combinedHint = hint;
+            if (!string.IsNullOrWhiteSpace(report))
+                combinedHint = string.IsNullOrEmpty(combinedHint) ? report : $"{combinedHint}\n\n{report}";
+            if (!string.IsNullOrEmpty(combinedHint) && combinedHint.Length > 950)
+                combinedHint = combinedHint[..950] + "...";
             return Task.FromResult(new ProcessedPokemonResult<T>
             {
                 Error = reason,
-                LegalizationHint = hint,
+                LegalizationHint = combinedHint,
                 ShowdownSet = set
             });
         }
@@ -301,9 +309,7 @@ public static class Helpers<T> where T : PKM, new()
             ? GameInfo.Strings.Species[result.ShowdownSet.Species]
             : "Unknown";
 
-        var embedBuilder = new EmbedBuilder()
-            .WithTitle("Trade Creation Failed.")
-            .WithColor(Color.Red)
+        var embedBuilder = EmbedHelper.CreateBuilder("Trade Creation Failed.", null, EmbedHelper.ColorDanger)
             .AddField("Status", $"Failed to create {spec}.")
             .AddField("Reason", result.Error ?? "Unknown error");
 
@@ -483,5 +489,4 @@ public static class Helpers<T> where T : PKM, new()
             lgcode: lgcode, ignoreAutoOT: ignoreAutoOT, setEdited: setEdited, isNonNative: isNonNative).ConfigureAwait(false);
     }
 }
-
 

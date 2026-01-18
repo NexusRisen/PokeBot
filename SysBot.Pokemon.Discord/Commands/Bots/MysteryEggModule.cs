@@ -201,10 +201,7 @@ namespace SysBot.Pokemon.Discord
 
         private static Embed CreateMysteryEggEmbed(SocketCommandContext context, T pk, int eggNumber, int totalEggs, int queuePosition)
         {
-            var embedBuilder = new EmbedBuilder()
-                .WithColor(global::Discord.Color.Gold)
-                .WithTitle($"🥚 Mystery Egg {eggNumber} of {totalEggs}")
-                .WithDescription("A mysterious egg containing a random Pokémon!")
+            var embedBuilder = EmbedHelper.CreateBuilder($"🥚 Mystery Egg {eggNumber} of {totalEggs}", "A mysterious egg containing a random Pokémon!", EmbedHelper.ColorGold)
                 .WithFooter($"Batch Trade {eggNumber} of {totalEggs}" + (eggNumber == 1 ? $" | Position: {queuePosition}" : ""))
                 .WithAuthor(new EmbedAuthorBuilder()
                     .WithName($"Mystery Egg for {context.User.Username}")

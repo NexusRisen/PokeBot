@@ -25,13 +25,7 @@ public class InfoModule : ModuleBase<SocketCommandContext>
     {
         var app = await Context.Client.GetApplicationInfoAsync().ConfigureAwait(false);
 
-        var builder = new EmbedBuilder
-        {
-            Color = new Color(88, 101, 242), // NexusRisen Blurple
-            Title = "🤖 NexusRisen PokeBot",
-            Description = detail,
-            Footer = new EmbedFooterBuilder().WithText("Powered by SysBot.NET • NexusRisen Edition")
-        };
+        var builder = EmbedHelper.CreateBuilder("🤖 NexusRisen PokeBot", detail, EmbedHelper.ColorInfo);
 
         builder.AddField("📝 Information",
             $"- **Source Code**: [GitHub Repository]({repo})\n" +

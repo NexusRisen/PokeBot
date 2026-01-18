@@ -10,11 +10,8 @@ public class PingModule : ModuleBase<SocketCommandContext>
     [Summary("Makes the bot respond, indicating that it is running.")]
     public async Task PingAsync()
     {
-        var embed = new EmbedBuilder()
-            .WithTitle("Ping Response")
-            .WithDescription("Pong! The bot is running smoothly.")
+        var embed = EmbedHelper.CreateBuilder("Ping Response", "Pong! The bot is running smoothly.", EmbedHelper.ColorSuccess)
             .WithImageUrl("https://i.gifer.com/QgxJ.gif")
-            .WithColor(Color.Green)
             .Build();
 
         await ReplyAsync(embed: embed).ConfigureAwait(false);

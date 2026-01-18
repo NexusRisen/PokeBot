@@ -252,11 +252,7 @@ public sealed class SysCord<T> where T : PKM, new()
 
         var botName = string.IsNullOrEmpty(SysCordSettings.HubConfig.Global.BotName) ? "SysBot" : SysCordSettings.HubConfig.Global.BotName;
         var fullStatusMessage = $"**Status**: {botName} is {status}!";
-        var embed = new EmbedBuilder()
-            .WithTitle("Bot Status Report")
-            .WithDescription(fullStatusMessage)
-            .WithColor(EmbedColorConverter.ToDiscordColor(color))
-            .WithTimestamp(DateTimeOffset.Now)
+        var embed = EmbedHelper.CreateBuilder("Bot Status Report", fullStatusMessage, EmbedColorConverter.ToDiscordColor(color))
             .Build();
 
         foreach (var channelId in SysCordSettings.Manager.WhitelistedChannels.List.Select(channel => channel.ID))

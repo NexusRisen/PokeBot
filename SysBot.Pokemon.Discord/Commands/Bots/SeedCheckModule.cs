@@ -27,7 +27,7 @@ public class SeedCheckModule<T> : ModuleBase<SocketCommandContext> where T : PKM
         var r = new SeedSearchResult(Z3SearchResult.Success, seed, -1, hub.Config.EncounterSystem.SeedCheckSWSH.ResultDisplayMode);
         var msg = r.ToString();
 
-        var embed = new EmbedBuilder { Color = Color.LighterGrey };
+        var embed = EmbedHelper.CreateBuilder(color: Color.LighterGrey);
 
         embed.AddField(x =>
         {
@@ -45,7 +45,7 @@ public class SeedCheckModule<T> : ModuleBase<SocketCommandContext> where T : PKM
     public async Task GetSeedListAsync()
     {
         string msg = Info.GetTradeList(PokeRoutineType.SeedCheck);
-        var embed = new EmbedBuilder();
+        var embed = EmbedHelper.CreateBuilder();
         embed.AddField(x =>
         {
             x.Name = "Pending Trades";
