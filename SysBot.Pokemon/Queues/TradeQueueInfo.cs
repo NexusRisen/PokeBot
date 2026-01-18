@@ -174,18 +174,17 @@ public sealed record TradeQueueInfo<T>(PokeTradeHub<T> Hub)
         lock (_sync)
         {
             var stuckTrades = UsersInQueue.Where(x => x.Trade.IsProcessing).ToList();
-            foreach (var trade in stuckTrades)
-            {
-                trade.Trade.IsProcessing = false;
-                Remove(trade);
-
-                // Also release batch tracker if it's a batch trade
-                if (trade.Trade.TotalBatchTrades > 1)
+                foreach (var trade in stuckTrades)
                 {
-                    var tracker = BatchTradeTracker<T>.Instance;
-                    tracker.ReleaseBatch(trade.UserID, trade.Trade.UniqueTradeID);
+                    trade.Trade.IsProcessing = false;
+                    RemoveTradeEntry(trade);
+
+                    if (trade.Trade.TotalBatchTrades > 1)
+                    {
+                        var tracker = BatchTradeTracker<T>.Instance;
+                        tracker.ReleaseBatch(trade.UserID, trade.Trade.UniqueTradeID);
+                    }
                 }
-            }
         }
     }
 
@@ -422,4 +421,3 @@ public sealed record TradeQueueInfo<T>(PokeTradeHub<T> Hub)
         }
     }
 }
-

@@ -13,8 +13,8 @@ namespace SysBot.Pokemon
 {
     public abstract class PokeRoutineExecutor9 : PokeRoutineExecutor<PK9>
     {
-        protected const int HidWaitTime = 46;
-        protected const int KeyboardPressTime = 20;
+        protected const int HidWaitTime = 32;
+        protected const int KeyboardPressTime = 10;
 
         protected uint PokePortalLoadedValue = 0xA;
         protected TrainerIDBlock OurTrainer = new TrainerIDBlock();
@@ -159,14 +159,14 @@ namespace SysBot.Pokemon
             await CloseGame(config, token).ConfigureAwait(false);
 
             // Small safety delay to let the system fully return to HOME
-            await Task.Delay(1_000, token).ConfigureAwait(false);
+            await Task.Delay(0_700, token).ConfigureAwait(false);
 
             // If for some reason the title is still running, try to ensure it is closed
             int closeTries = 3;
             while (closeTries-- > 0 && await IsGameRunning(token).ConfigureAwait(false))
             {
-                await Click(HOME, 1_000, token).ConfigureAwait(false);
-                await Task.Delay(1_000, token).ConfigureAwait(false);
+                await Click(HOME, 0_700, token).ConfigureAwait(false);
+                await Task.Delay(0_700, token).ConfigureAwait(false);
             }
 
             // Start the game fresh from HOME using the non-check branch
@@ -184,9 +184,9 @@ namespace SysBot.Pokemon
             }
 
             await Click(B, 0_500, token).ConfigureAwait(false);
-            await Click(HOME, 2_000 + timing.ExtraTimeReturnHome, token).ConfigureAwait(false);
+            await Click(HOME, 1_500 + timing.ExtraTimeReturnHome, token).ConfigureAwait(false);
             await Click(X, 1_000, token).ConfigureAwait(false);
-            await Click(A, 5_000 + timing.ExtraTimeCloseGame, token).ConfigureAwait(false);
+            await Click(A, 3_500 + timing.ExtraTimeCloseGame, token).ConfigureAwait(false);
             Log("Closed out of the game!");
         }
 
@@ -199,14 +199,14 @@ namespace SysBot.Pokemon
                 if (!await IsGameRunning(token).ConfigureAwait(false))
                 {
                     var commandBytes = Encoding.ASCII.GetBytes("touch 300 300\r\n");
-                    await Click(HOME, 1_500, token).ConfigureAwait(false);
+                    await Click(HOME, 1_200, token).ConfigureAwait(false);
                     await SwitchConnection.SendRaw(commandBytes, token).ConfigureAwait(false);
-                    await Task.Delay(0_500, token).ConfigureAwait(false);
+                    await Task.Delay(0_350, token).ConfigureAwait(false);
                     await SwitchConnection.SendRaw(commandBytes, token).ConfigureAwait(false);
                 }
             }
             else
-                await Click(A, 1_000 + timing.ExtraTimeLoadProfile, token).ConfigureAwait(false);
+                await Click(A, 0_800 + timing.ExtraTimeLoadProfile, token).ConfigureAwait(false);
 
             if (timing.AvoidSystemUpdate)
             {
@@ -214,18 +214,18 @@ namespace SysBot.Pokemon
                 await Click(A, 1_000 + timing.ExtraTimeLoadProfile, token).ConfigureAwait(false);
             }
 
-            await Click(A, 1_000, token).ConfigureAwait(false);
+            await Click(A, 0_800, token).ConfigureAwait(false);
 
             if (timing.CheckGameDelay)
-                await Task.Delay(2_000 + timing.ExtraTimeCheckGame, token).ConfigureAwait(false);
+                await Task.Delay(1_500 + timing.ExtraTimeCheckGame, token).ConfigureAwait(false);
 
-            await Click(DUP, 0_600, token).ConfigureAwait(false);
-            await Click(A, 0_600, token).ConfigureAwait(false);
+            await Click(DUP, 0_450, token).ConfigureAwait(false);
+            await Click(A, 0_450, token).ConfigureAwait(false);
 
             Log("Restarting the game!");
 
             // Switch Logo lag, skip cutscene, game load screen
-            await Task.Delay(15_000 + timing.ExtraTimeLoadGame, token).ConfigureAwait(false);
+            await Task.Delay(9_000 + timing.ExtraTimeLoadGame, token).ConfigureAwait(false);
 
             // Active Title Screen Handling (Hexbyt3-style)
             var timer = 120_000;
@@ -245,24 +245,24 @@ namespace SysBot.Pokemon
                 }
 
                 if (await IsKeyboardOpen(token).ConfigureAwait(false))
-                     await Click(B, 1_000, token).ConfigureAwait(false);
+                    await Click(B, 0_700, token).ConfigureAwait(false);
                 else
-                    await Click(A, 1_500, token).ConfigureAwait(false);
-                
-                timer -= 1_500;
+                    await Click(A, 1_100, token).ConfigureAwait(false);
+
+                timer -= 1_100;
             }
 
             while (!await IsGameRunning(token).ConfigureAwait(false)) // Scarlet / Violet crash randomly
             {
                 if (checkGameRun)
                     await StartGame(config, token, false);
-                await Task.Delay(1_000, token).ConfigureAwait(false);
+                await Task.Delay(0_700, token).ConfigureAwait(false);
             }
 
-            await Task.Delay(5_000, token).ConfigureAwait(false);
+            await Task.Delay(1_500, token).ConfigureAwait(false);
 
             while (!await CanPlayerMove(token).ConfigureAwait(false))
-                await Click(A, 1_000, token).ConfigureAwait(false);
+                await Click(A, 0_800, token).ConfigureAwait(false);
 
             Log("Back in the overworld!");
 

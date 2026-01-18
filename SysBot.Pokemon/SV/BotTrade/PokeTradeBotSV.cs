@@ -124,12 +124,12 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
             {
                 if (aPressFirst)
                     for (int i = 0; i < 3; i++)
-                        await Click(A, 0_500, token).ConfigureAwait(false);
+                        await Click(A, 0_350, token).ConfigureAwait(false);
                 if (!await ReturnToOverworld(token).ConfigureAwait(false))
                     return false;
 
-                await Task.Delay(2_500, token).ConfigureAwait(false);
-                await Click(X, 1_000, token).ConfigureAwait(false);
+                await Task.Delay(2_000, token).ConfigureAwait(false);
+                await Click(X, 0_700, token).ConfigureAwait(false);
                 await Click(L, 8_000, token).ConfigureAwait(false);
 
                 int tries = 11;
@@ -137,13 +137,13 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
                 {
                     if (tries-- < 1)
                         return false;
-                    await Task.Delay(1_000).ConfigureAwait(false);
-                    await Click(B, 0_500, token).ConfigureAwait(false);
+                    await Task.Delay(0_800).ConfigureAwait(false);
+                    await Click(B, 0_350, token).ConfigureAwait(false);
                 }
 
-                await Task.Delay(1_000).ConfigureAwait(false);
+                await Task.Delay(0_800).ConfigureAwait(false);
                 for (int i = 0; i < 3; i++)
-                    await Click(B, 0_500, token).ConfigureAwait(false);
+                    await Click(B, 0_350, token).ConfigureAwait(false);
             }
 
             return true;
@@ -164,7 +164,7 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
                 {
                     if (await IsKeyboardOpen(token).ConfigureAwait(false))
                         break;
-                    await Click(A, 1_000, token).ConfigureAwait(false);
+                    await Click(A, 0_800, token).ConfigureAwait(false);
                 }
             }
 
@@ -175,12 +175,12 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
                 {
                     if (await IsKeyboardOpen(token).ConfigureAwait(false))
                         break;
-                    await Click(A, 1_000, token).ConfigureAwait(false);
+                    await Click(A, 0_800, token).ConfigureAwait(false);
                 }
             }
 
             // Allow the game to settle in the overworld before attempting inputs
-            await Task.Delay(2_000, token).ConfigureAwait(false);
+            await Task.Delay(1_500, token).ConfigureAwait(false);
 
             if (!await ConnectIfNotConnected(verboseLogging, token).ConfigureAwait(false))
                 return false;
@@ -196,10 +196,10 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
             // check if we are still searching
             if (await IsSearching(token).ConfigureAwait(false))
             {
-                await Click(B, 1_000, token).ConfigureAwait(false);
-                await Click(A, 1_800, token).ConfigureAwait(false);
-                await Click(A, 0_500, token).ConfigureAwait(false);
-                await Click(PLUS, 1_500, token).ConfigureAwait(false);
+                await Click(B, 0_800, token).ConfigureAwait(false);
+                await Click(A, 1_200, token).ConfigureAwait(false);
+                await Click(A, 0_350, token).ConfigureAwait(false);
+                await Click(PLUS, 1_000, token).ConfigureAwait(false);
 
                 if (await IsKeyboardOpen(token).ConfigureAwait(false))
                     return true;
@@ -209,8 +209,8 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
             {
                 if (!await CanPlayerMove(token).ConfigureAwait(false) && await IsPokePortalLoaded(token, verboseLogging).ConfigureAwait(false))
                 {
-                    await Click(A, 1_500, token).ConfigureAwait(false);
-                    await Click(PLUS, 1_500, token).ConfigureAwait(false);
+                    await Click(A, 1_000, token).ConfigureAwait(false);
+                    await Click(PLUS, 1_000, token).ConfigureAwait(false);
 
                     if (await IsKeyboardOpen(token).ConfigureAwait(false))
                         return true;
@@ -230,22 +230,22 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
             }
 
             // Ensure we wait a bit before opening the menu
-            await Task.Delay(1_000, token).ConfigureAwait(false);
-            await Click(X, 1_000, token).ConfigureAwait(false);
+            await Task.Delay(0_800, token).ConfigureAwait(false);
+            await Click(X, 0_800, token).ConfigureAwait(false);
 
             if (!skipInitialChecks)
             {
                 // hold dpad up
-                await PressAndHold(DUP, 2_300, 0_400, token).ConfigureAwait(false);
+                await PressAndHold(DUP, 2_000, 0_300, token).ConfigureAwait(false);
             }
 
             // Assuming we've unlocked picnic
-            await Click(DRIGHT, 0_500, token).ConfigureAwait(false);
-            await Click(DUP, 0_500, token).ConfigureAwait(false);
-            await Click(DUP, 0_500, token).ConfigureAwait(false);
-            await Click(DUP, 0_850, token).ConfigureAwait(false);
-            await Click(DUP, 0_850, token).ConfigureAwait(false);
-            await Click(A, 0_500, token).ConfigureAwait(false);
+            await Click(DRIGHT, 0_350, token).ConfigureAwait(false);
+            await Click(DUP, 0_350, token).ConfigureAwait(false);
+            await Click(DUP, 0_350, token).ConfigureAwait(false);
+            await Click(DUP, 0_650, token).ConfigureAwait(false);
+            await Click(DUP, 0_650, token).ConfigureAwait(false);
+            await Click(A, 0_350, token).ConfigureAwait(false);
 
             int checks = 20;
             while (!await IsPokePortalLoaded(token, verboseLogging).ConfigureAwait(false))
@@ -266,7 +266,7 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
                 await RestartGameIfCantTrade(true, code, token).ConfigureAwait(false);
             }
 
-            await Task.Delay(6_000 + Hub.Config.Timings.ExtraTimeLoadPortal, token).ConfigureAwait(false);
+            await Task.Delay(4_000 + Hub.Config.Timings.ExtraTimeLoadPortal, token).ConfigureAwait(false);
 
             await Click(DDOWN, 0_700, token).ConfigureAwait(false);
             await Click(DDOWN, 0_700, token).ConfigureAwait(false);
@@ -302,7 +302,7 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
             }
 
             if (await IsPokePortalLoaded(token).ConfigureAwait(false))
-                await Task.Delay(3_000 + Hub.Config.Timings.ExtraTimeLoadPortal, token).ConfigureAwait(false);
+                await Task.Delay(1_500 + Hub.Config.Timings.ExtraTimeLoadPortal, token).ConfigureAwait(false);
         }
 
         private async Task InnerLoop(SAV9SV sav, CancellationToken token)
@@ -383,7 +383,7 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
 
             const int interval = 10;
             if (waitCounter % interval == interval - 1 && Hub.Config.Global.AntiIdle)
-                await Click(B, 1_000, token).ConfigureAwait(false);
+                await Click(B, 0_800, token).ConfigureAwait(false);
             else
                 await Task.Delay(1_000, token).ConfigureAwait(false);
         }
@@ -618,17 +618,17 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
         {
             var oldPKData = await SwitchConnection.PointerPeek(BoxFormatSlotSize, BoxStartPokemonPointer, token).ConfigureAwait(false);
 
-            await Click(A, 3_000, token).ConfigureAwait(false);
+            await Click(A, 2_000, token).ConfigureAwait(false);
             for (int i = 0; i < 14; i++)
             {
-                await Click(A, 1_500, token).ConfigureAwait(false);
+                await Click(A, 1_000, token).ConfigureAwait(false);
             }
 
-            await Click(A, 3_000, token).ConfigureAwait(false);
+            await Click(A, 2_000, token).ConfigureAwait(false);
             var tradeCounter = 0;
             while (await IsPokePortalLoaded(token).ConfigureAwait(false))
             {
-                await Click(A, 1_000, token).ConfigureAwait(false);
+                await Click(A, 0_800, token).ConfigureAwait(false);
                 tradeCounter++;
 
                 var v1 = await SwitchConnection.PointerPeek(BoxFormatSlotSize, BoxStartPokemonPointer, token).ConfigureAwait(false);
@@ -643,7 +643,7 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
 
             if (detail.Type == PokeTradeType.Specific && !await IsPokePortalLoaded(token).ConfigureAwait(false)) // One last chance to force them to take the pokemon
                 for (int i = 0; i < 8; i++)
-                    await Click(A, 0_400, token).ConfigureAwait(false);
+                    await Click(A, 0_300, token).ConfigureAwait(false);
             
             // If we don't detect a B1S1 change, the trade didn't go through in that time.
             return PokeTradeResult.TrainerHasBadConnection;
@@ -667,7 +667,7 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
             if (keyboardbytes.SequenceEqual(EmptyByteArray))
             {
                 // get out of keyboard
-                await Click(PLUS, 1_000, token).ConfigureAwait(false);
+                    await Click(PLUS, 0_800, token).ConfigureAwait(false);
 
                 // as we inject the code, a wait should be placed here to give the other trainer time to setup
                 if (poke.Type == PokeTradeType.Specific)
@@ -679,16 +679,16 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
                 await SwitchConnection.WriteBytesAbsoluteAsync(codeBytes, offs, token).ConfigureAwait(false);
 
                 // get back in (cycle)
-                await Click(PLUS, 1_000, token).ConfigureAwait(false); 
+                await Click(PLUS, 0_800, token).ConfigureAwait(false); 
             }
 
             // Wait for Barrier to trigger all bots simultaneously.
             WaitAtBarrierIfApplicable(token);
 
-            await Task.Delay(0_500, token).ConfigureAwait(false);
-            await Click(PLUS, 1_000, token).ConfigureAwait(false);
+            await Task.Delay(0_400, token).ConfigureAwait(false);
+            await Click(PLUS, 0_800, token).ConfigureAwait(false);
             for (int i = 0; i < 5; ++i)
-                await Click(A, 0_500, token).ConfigureAwait(false);
+                await Click(A, 0_350, token).ConfigureAwait(false);
 
             int checks = 3;
             while (!await IsSearching(token).ConfigureAwait(false))
@@ -929,10 +929,10 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
             }
 
             await SetBoxPokemon(clone, token, sav).ConfigureAwait(false);
-            await Click(A, 0_800, token).ConfigureAwait(false);
+            await Click(A, 0_600, token).ConfigureAwait(false);
 
             for (int i = 0; i < 5; i++)
-                await Click(A, 0_500, token).ConfigureAwait(false);
+                await Click(A, 0_350, token).ConfigureAwait(false);
 
             return (clone, PokeTradeResult.Success);
         }
@@ -991,9 +991,9 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
             int attempts = 20;
             while (!await IsPokePortalLoaded(token).ConfigureAwait(false))
             {
-                await Click(B, 0_800, token).ConfigureAwait(false);
-                await Click(B, 0_800, token).ConfigureAwait(false);
-                await Click(A, 1_200, token).ConfigureAwait(false);
+                await Click(B, 0_600, token).ConfigureAwait(false);
+                await Click(B, 0_600, token).ConfigureAwait(false);
+                await Click(A, 0_900, token).ConfigureAwait(false);
                 if (attempts-- < 1)
                     return PokeTradeResult.RecoverReturnOverworld;
             }

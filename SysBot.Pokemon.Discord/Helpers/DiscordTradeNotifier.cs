@@ -147,6 +147,9 @@ public class DiscordTradeNotifier<T> : IPokeTradeNotifier<T>, IDisposable
 
     public async Task SendInitialQueueUpdate()
     {
+        if (_initialUpdateSent)
+            return;
+
         var position = Hub.Queues.Info.CheckPosition(_traderID, _uniqueTradeID, PokeRoutineType.LinkTrade);
         var currentPosition = position.Position < 1 ? 1 : position.Position;
         var botct = Hub.Bots.Count;
@@ -444,4 +447,3 @@ public class DiscordTradeNotifier<T> : IPokeTradeNotifier<T>, IDisposable
         Dispose();
     }
 }
-
