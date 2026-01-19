@@ -1,13 +1,19 @@
 using System.ComponentModel;
+using System.Linq;
 
 namespace SysBot.Pokemon;
 
-public class GlobalSettings
+public class GlobalSettings : ICustomTypeDescriptor
 {
     private const string FeatureToggle = nameof(FeatureToggle);
     private const string Operation = nameof(Operation);
     private const string BotTrade = nameof(BotTrade);
     private const string Integration = nameof(Integration);
+
+    [Browsable(false)]
+    public ProgramMode CurrentMode { get; set; } = ProgramMode.None;
+
+    public bool ShouldSerializeAntiIdle() => CurrentMode != ProgramMode.SV;
 
     [Category(BotTrade), Description("Name of the Discord Bot the Program is Running. This will Title the window for easier recognition. Requires program restart.")]
     public string BotName { get; set; } = string.Empty;
@@ -46,4 +52,29 @@ public class GlobalSettings
     public bool SkipConsoleBotCreation { get; set; }
 
     public override string ToString() => "Global Settings";
+
+    // ICustomTypeDescriptor implementation
+    public AttributeCollection GetAttributes() => TypeDescriptor.GetAttributes(this, true);
+    public string? GetClassName() => TypeDescriptor.GetClassName(this, true);
+    public string? GetComponentName() => TypeDescriptor.GetComponentName(this, true);
+    public TypeConverter? GetConverter() => TypeDescriptor.GetConverter(this, true);
+    public EventDescriptor? GetDefaultEvent() => TypeDescriptor.GetDefaultEvent(this, true);
+    public PropertyDescriptor? GetDefaultProperty() => TypeDescriptor.GetDefaultProperty(this, true);
+    public object? GetEditor(Type editorBaseType) => TypeDescriptor.GetEditor(this, editorBaseType, true);
+    public EventDescriptorCollection GetEvents() => TypeDescriptor.GetEvents(this, true);
+    public EventDescriptorCollection GetEvents(Attribute[]? attributes) => TypeDescriptor.GetEvents(this, attributes, true);
+
+    public PropertyDescriptorCollection GetProperties() => GetProperties(null);
+
+    public PropertyDescriptorCollection GetProperties(Attribute[]? attributes)
+    {
+        var properties = TypeDescriptor.GetProperties(this, attributes, true);
+        var filtered = properties.Cast<PropertyDescriptor>().Where(prop =>
+        {
+            if (prop.Name == nameof(AntiIdle) && CurrentMode == ProgramMode.SV)
+                return false;
+            return true;
+        }).ToArray();
+        return new PropertyDescriptorCollection(filtered);
+    }
 }

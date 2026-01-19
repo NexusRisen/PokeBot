@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using PKHeX.Core.AutoMod;
 using PKHeX.Core.Searching;
 using SysBot.Base;
@@ -335,10 +335,7 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
                 if (waitCounter == 0)
                     Log("No task assigned. Waiting for new task assignment.");
                 waitCounter++;
-                if (waitCounter % 10 == 0 && Hub.Config.Global.AntiIdle)
-                    await Click(B, 1_000, token).ConfigureAwait(false);
-                else
-                    await Task.Delay(1_000, token).ConfigureAwait(false);
+                await Task.Delay(1_000, token).ConfigureAwait(false);
             }
         }
 
@@ -381,11 +378,11 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
                 Log("Nothing to check, waiting for new users...");
             }
 
-            const int interval = 10;
-            if (waitCounter % interval == interval - 1 && Hub.Config.Global.AntiIdle)
-                await Click(B, 0_800, token).ConfigureAwait(false);
-            else
-                await Task.Delay(1_000, token).ConfigureAwait(false);
+            // const int interval = 10;
+            // if (waitCounter % interval == interval - 1 && Hub.Config.Global.AntiIdle)
+            //     await Click(B, 0_800, token).ConfigureAwait(false);
+            // else
+            await Task.Delay(1_000, token).ConfigureAwait(false);
         }
 
         protected virtual (PokeTradeDetail<PK9>? detail, uint priority) GetTradeData(PokeRoutineType type)

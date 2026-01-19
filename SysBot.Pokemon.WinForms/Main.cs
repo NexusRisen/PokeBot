@@ -146,6 +146,7 @@ namespace SysBot.Pokemon.WinForms
                     LogConfig.MaxArchiveFiles = Config.Hub.Global.MaxArchiveFiles;
                     LogConfig.LoggingEnabled = Config.Hub.Global.LoggingEnabled;
                     Config.Hub.TradeSystem.Distribution.CurrentMode = Config.Mode;
+                    Config.Hub.Global.CurrentMode = Config.Mode;
                     comboBox1.SelectedValue = (int)Config.Mode;
 
                     RunningEnvironment = GetRunner(Config);
@@ -176,6 +177,7 @@ namespace SysBot.Pokemon.WinForms
                             LogConfig.MaxArchiveFiles = Config.Hub.Global.MaxArchiveFiles;
                             LogConfig.LoggingEnabled = Config.Hub.Global.LoggingEnabled;
                             Config.Hub.TradeSystem.Distribution.CurrentMode = Config.Mode;
+                            Config.Hub.Global.CurrentMode = Config.Mode;
                             comboBox1.SelectedValue = (int)Config.Mode;
 
                             RunningEnvironment = GetRunner(Config);
@@ -1053,6 +1055,7 @@ namespace SysBot.Pokemon.WinForms
                 ProgramMode newMode = (ProgramMode)selectedValue;
                 Config.Mode = newMode;
                 Config.Hub.TradeSystem.Distribution.CurrentMode = newMode;
+                Config.Hub.Global.CurrentMode = newMode;
                 SaveCurrentConfig();
                 UpdateRunnerAndUI();
                 UpdateBackgroundImage(newMode);
