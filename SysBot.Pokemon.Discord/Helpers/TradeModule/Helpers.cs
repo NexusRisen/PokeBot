@@ -113,11 +113,15 @@ public static class Helpers<T> where T : PKM, new()
     {
         try
         {
-            await message.DeleteAsync();
+            await message.DeleteAsync().ConfigureAwait(false);
         }
-        catch (HttpException ex) when (ex.DiscordCode == DiscordErrorCode.UnknownMessage)
+        catch (HttpException)
         {
-            // Ignore Unknown Message exception
+            // Ignore Discord HTTP exceptions during message deletion (unknown message, missing access, etc.)
+        }
+        catch (Exception ex)
+        {
+            LogUtil.LogSafe(ex, nameof(TradeModule<T>));
         }
     }
 
@@ -489,4 +493,3 @@ public static class Helpers<T> where T : PKM, new()
             lgcode: lgcode, ignoreAutoOT: ignoreAutoOT, setEdited: setEdited, isNonNative: isNonNative).ConfigureAwait(false);
     }
 }
-
