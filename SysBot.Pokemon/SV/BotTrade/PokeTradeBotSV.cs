@@ -123,6 +123,10 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
             if (!await IsConnected(token).ConfigureAwait(false))
             {
                 if (aPressFirst)
+                {
+                    for (int i = 0; i < 3; i++)
+                        await Click(A, 0_350, token).ConfigureAwait(false);
+                }
                     for (int i = 0; i < 3; i++)
                         await Click(A, 0_350, token).ConfigureAwait(false);
                 if (!await ReturnToOverworld(token).ConfigureAwait(false))

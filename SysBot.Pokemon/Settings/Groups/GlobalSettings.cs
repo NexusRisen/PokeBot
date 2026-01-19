@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Linq;
+using System;
 
 namespace SysBot.Pokemon;
 
@@ -77,4 +78,6 @@ public class GlobalSettings : ICustomTypeDescriptor
         }).ToArray();
         return new PropertyDescriptorCollection(filtered);
     }
+
+    public object? GetPropertyOwner(PropertyDescriptor? pd) => this;
 }
