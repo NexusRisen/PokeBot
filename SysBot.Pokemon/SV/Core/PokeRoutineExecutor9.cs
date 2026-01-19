@@ -206,7 +206,9 @@ namespace SysBot.Pokemon
                 }
             }
             else
+            {
                 await Click(A, 0_800 + timing.ExtraTimeLoadProfile, token).ConfigureAwait(false);
+            }
 
             if (timing.AvoidSystemUpdate)
             {

@@ -780,10 +780,14 @@ public class TradeModule<T> : ModuleBase<SocketCommandContext> where T : PKM, ne
 
                 if (result.Pokemon == null)
                 {
-                    var location = $"{Context.Guild?.Name ?? "DM"} #{Context.Channel.Name} ({Context.Channel.Id})";
-                    var request = $"User: {Context.User.Username} ({Context.User.Id}) | Code: {code:0000 0000} | Location: {location}";
-                    var body = $"Reason: {result.Error ?? "Unknown"}\n\nShowdown:\n{Truncate(content, 1500)}";
-                    LogUtil.LogError($"{request}\n{body}", nameof(TradeModule<T>));
+                    var error = result.Error ?? "Unknown";
+                    if (!error.StartsWith("Unable to parse Showdown", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var location = $"{Context.Guild?.Name ?? "DM"} #{Context.Channel.Name} ({Context.Channel.Id})";
+                        var request = $"User: {Context.User.Username} ({Context.User.Id}) | Code: {code:0000 0000} | Location: {location}";
+                        var body = $"Reason: {error}\n\nShowdown:\n{Truncate(content, 1500)}";
+                        LogUtil.LogError($"{request}\n{body}", nameof(TradeModule<T>));
+                    }
 
                     await Helpers<T>.SendTradeErrorEmbedAsync(Context, result);
                     return;
@@ -823,6 +827,5 @@ public class TradeModule<T> : ModuleBase<SocketCommandContext> where T : PKM, ne
 
     #endregion
 }
-
 
 

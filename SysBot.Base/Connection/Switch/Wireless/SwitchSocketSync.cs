@@ -82,10 +82,17 @@ public sealed class SwitchSocketSync(IWirelessConnectionConfig cfg) : SwitchSock
 
     public void WriteBytesMain(ReadOnlySpan<byte> data, ulong offset) => Write(Main, data, offset);
 
-    private static byte[] DecodeResult(ReadOnlyMemory<byte> buffer, int length)
+    private static byte[] DecodeResult(ReadOnlyMemory<byte> buffer, int length, int bytesRead)
     {
+        if (bytesRead <= 0)
+            throw new InvalidOperationException("No data received from console.");
+
+        var dataLength = bytesRead - 1;
+        if (dataLength < length * 2)
+            throw new InvalidOperationException($"Unexpected response length from console. Expected at least {length * 2} hex characters, received {dataLength}.");
+
+        var span = buffer.Span.Slice(0, length * 2);
         var result = new byte[length];
-        var span = buffer.Span[..^1]; // Last byte is always a terminator
         Decoder.LoadHexBytesTo(span, result, 2);
         return result;
     }
@@ -123,9 +130,9 @@ public sealed class SwitchSocketSync(IWirelessConnectionConfig cfg) : SwitchSock
         Thread.Sleep((MaximumTransferSize / DelayFactor) + BaseDelay);
         var size = (length * 2) + 1;
         var buffer = ArrayPool<byte>.Shared.Rent(size);
-        var _ = Read(buffer, size);
+        var bytesRead = Read(buffer, size);
         var mem = buffer.AsMemory(0, size);
-        var result = DecodeResult(mem, length);
+        var result = DecodeResult(mem, length, bytesRead);
         ArrayPool<byte>.Shared.Return(buffer, true);
         return result;
     }
