@@ -230,6 +230,9 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
                     await RestartGameIfCantTrade(true, code, token).ConfigureAwait(false);
                 }
                 else
+                {
+                    await EstablishOverworldPokePortalMinimum(token).ConfigureAwait(false);
+                }
                     await EstablishOverworldPokePortalMinimum(token).ConfigureAwait(false);
             }
 
@@ -527,6 +530,10 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
                 return await ProcessDumpTradeAsync(poke, token).ConfigureAwait(false);
 
             if (poke.Type == PokeTradeType.Random)
+            {
+                if (CheckPartnerReputation(poke, tradePartnerNID, tradePartner.TrainerName, token) != PokeTradeResult.Success)
+                    return PokeTradeResult.SuspiciousActivity;
+            }
                 if (CheckPartnerReputation(poke, tradePartnerNID, tradePartner.TrainerName, token) != PokeTradeResult.Success)
                     return PokeTradeResult.SuspiciousActivity;
 
@@ -588,7 +595,9 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
                 await Task.Delay(2_900, token).ConfigureAwait(false);
             }
             else if (tradeResult != PokeTradeResult.Success)
+            {
                 return tradeResult;
+            }
 
             if (token.IsCancellationRequested)
                 return PokeTradeResult.RoutineCancel;
@@ -643,8 +652,10 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
             }
 
             if (detail.Type == PokeTradeType.Specific && !await IsPokePortalLoaded(token).ConfigureAwait(false)) // One last chance to force them to take the pokemon
+            {
                 for (int i = 0; i < 8; i++)
                     await Click(A, 0_300, token).ConfigureAwait(false);
+            }
             
             // If we don't detect a B1S1 change, the trade didn't go through in that time.
             return PokeTradeResult.TrainerHasBadConnection;
@@ -1323,7 +1334,7 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
             return PokeTradeResult.Success;
         }
 
-        private async Task HandleAbortedBatchTrade(PokeTradeDetail<PK9> detail, PokeRoutineType type, uint priority, PokeTradeResult result, CancellationToken token)
+        private Task HandleAbortedBatchTrade(PokeTradeDetail<PK9> detail, PokeRoutineType type, uint priority, PokeTradeResult result, CancellationToken token)
         {
             detail.IsProcessing = false;
             Hub.Queues.Info.Remove(new TradeEntry<PK9>(detail, detail.Trainer.ID, type, detail.Trainer.TrainerName, detail.UniqueTradeID));
@@ -1348,5 +1359,7 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
             {
                 HandleAbortedTrade(detail, type, priority, result);
             }
+
+            return Task.CompletedTask;
         }
 }
