@@ -1100,7 +1100,9 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
                 await SwitchConnection.WriteBytesAbsoluteAsync(codeBytes, offs, token).ConfigureAwait(false);
             }
             else
+            {
                 await SwitchConnection.WriteBytesAbsoluteAsync(new byte[0x10], offs, token).ConfigureAwait(false);
+            }
         }
 
         private PokeTradeResult CheckPartnerReputation(PokeTradeDetail<PK9> poke, ulong TrainerNID, string TrainerName, CancellationToken token)
@@ -1244,11 +1246,13 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
 
                 // Reputation check
                 if (poke.Type == PokeTradeType.Random)
+                {
                     if (CheckPartnerReputation(poke, tradePartnerNID, tradePartner.TrainerName, token) != PokeTradeResult.Success)
                     {
                         SendCollectedPokemonAndCleanup();
                         return PokeTradeResult.SuspiciousActivity;
                     }
+                }
 
                 // Wait for offer
                 var offered = await ReadUntilPresentPointer(LinkTradePartnerPokemonPointer, 25_000, 1_000, TradeFormatSlotSize, token).ConfigureAwait(false);
